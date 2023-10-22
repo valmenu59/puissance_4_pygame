@@ -187,9 +187,10 @@ class Plateau:
 
 
     def printPlateau(self):
-        traits = " " # cela correspond à un demi espace
+        traits = ""
         for i in range(7):
             traits += "--"
+        traits += "-"
         print(traits)
         for i in range(6):
             listePion = "|"
