@@ -357,8 +357,10 @@ class Jeu:
 
     def actionClavier(self, event: py.event.Event) -> bool:
         if event.dict.get('key') == 49:
+            # correspond à la touche & ou 1
             return self.placerPion(0)
         elif event.dict.get('key') == 50:
+            # correspond à la touche é ou 2
             return self.placerPion(1)
         elif event.dict.get('key') == 51:
             return self.placerPion(2)
