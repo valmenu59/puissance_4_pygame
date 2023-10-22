@@ -2,8 +2,6 @@
 PUISSANCE 4
 MENU VALENTIN
 """
-import keyword
-
 import pygame as py
 import time
 
