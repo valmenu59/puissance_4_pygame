@@ -2,6 +2,7 @@
 PUISSANCE 4
 MENU VALENTIN
 """
+import keyword
 
 import pygame as py
 import time
@@ -188,13 +189,22 @@ class Plateau:
 
 
     def printPlateau(self):
-        listePion = ""
+        traits = " " # cela correspond à un demi espace
+        for i in range(7):
+            traits += "--"
+        print(traits)
         for i in range(6):
+            listePion = "|"
             for j in range(7):
-                listePion += str(self.getPion(i,j).getCouleur().getRGB())+"  "
+                if self.getPion(i,j).getCouleur().getRGB() == BLANC:
+                    listePion += " |"
+                elif self.getPion(i,j).getCouleur().getRGB() == JAUNE:
+                    listePion += "J|"
+                else:
+                    listePion += "R|"
                 if j == 6:
                     print(listePion)
-                    listePion = ""
+        print(traits)
 
 
 
@@ -310,9 +320,12 @@ class Jeu:
 
                 # permet d'économiser les ressources en mettant à jour le plateau uniquement s'il y a une action
                 # utilisateur (click de souris ou frappe de clavier)
-                if event.type == py.MOUSEBUTTONDOWN or event.type == py.KEYDOWN:
+                if event.type == py.MOUSEBUTTONDOWN or event.type == py.KEYUP:
                     if event.type == py.MOUSEBUTTONDOWN:
                         if self.actionSouris():
+                            mettreAJourEcran = True
+                    elif event.type == py.KEYUP:
+                        if self.actionClavier(event):
                             mettreAJourEcran = True
 
             if mettreAJourEcran:
@@ -330,7 +343,7 @@ class Jeu:
                 else:
                     self.__isAuTourDuJaune = not self.__isAuTourDuJaune
                     self.__affichage.actualiserTexte(self.__isAuTourDuJaune)
-        time.sleep(100000)
+        time.sleep(10) # 15 secondes pour que le jeu se ferme
         py.quit()
 
 
@@ -341,18 +354,40 @@ class Jeu:
             for cercle in listeCercles:
                 if cercle.collidepoint(mouseX, mouseY):
                     j = self.__affichage.convertirPosEcranEnPosMatrice(mouseX, mouseY)[1]
-                    i = self.__plateau.trouverEmplacementLibre(j)
-                    if i == -1:
-                        return False
-                    elif self.__isAuTourDuJaune:
-                        couleur = JAUNE
-                    else:
-                        couleur = ROUGE
-                    self.__plateau.getPion(i, j).getCouleur().setRGB(couleur)
-                    self.__affichage.setPion(i, j, couleur)
-                    self.__aUnGagnant = self.__plateau.verifierVictoire(i, j, couleur)
-                    self.__aUnAExoquo = self.__plateau.verifExAEquo()
-                    return True
+                    return self.placerPion(j)
+
+
+    def actionClavier(self, event: py.event.Event) -> bool:
+        if event.dict.get('key') == 49:
+            return self.placerPion(0)
+        elif event.dict.get('key') == 50:
+            return self.placerPion(1)
+        elif event.dict.get('key') == 51:
+            return self.placerPion(2)
+        elif event.dict.get('key') == 52:
+            return self.placerPion(3)
+        elif event.dict.get('key') == 53:
+            return self.placerPion(4)
+        elif event.dict.get('key') == 54:
+            return self.placerPion(5)
+        elif event.dict.get('key') == 55:
+            return self.placerPion(6)
+
+    def placerPion(self, j: int) -> bool:
+        i = self.__plateau.trouverEmplacementLibre(j)
+        if i == -1:
+            return False
+        elif self.__isAuTourDuJaune:
+            couleur = JAUNE
+        else:
+            couleur = ROUGE
+        self.__plateau.getPion(i, j).getCouleur().setRGB(couleur)
+        self.__affichage.setPion(i, j, couleur)
+        self.__aUnGagnant = self.__plateau.verifierVictoire(i, j, couleur)
+        self.__aUnAExoquo = self.__plateau.verifExAEquo()
+        self.__plateau.printPlateau()
+        return True
+
 
 
 Jeu()
