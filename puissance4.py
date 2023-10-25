@@ -2,11 +2,11 @@
 PUISSANCE 4
 MENU VALENTIN
 """
-import pygame as py
+import pygame
 import time
 
 # Initialiser pygame
-py.init()
+pygame.init()
 
 # JEUX DE COULEURS
 BLANC: tuple = (255, 255, 255)
@@ -15,10 +15,10 @@ JAUNE: tuple = (255, 255, 0)
 NOIR: tuple = (0, 0, 0)
 BLEU: tuple = (0, 0, 255)
 # POLICE
-POLICE = py.font.SysFont("arial", 20, bold=True, italic=False)
+POLICE = pygame.font.SysFont("arial", 20, bold=True, italic=False)
 
 # Taille de la fenêtre
-SCREEN = py.display.set_mode((800, 800))
+SCREEN = pygame.display.set_mode((800, 800))
 # Couleur de fond en blanc
 SCREEN.fill((255, 255, 255))
 
@@ -221,8 +221,8 @@ class Affichage:
 
     def afficherTexte(self):
         self.__label = POLICE.render(self.__texteJeu, True, NOIR)
-        py.draw.rect(SCREEN, BLANC, (self.__emplacementTexte[0], self.__emplacementTexte[1], self.__label.get_width() +
-                                     250, self.__label.get_height()))
+        pygame.draw.rect(SCREEN, BLANC, (self.__emplacementTexte[0], self.__emplacementTexte[1], self.__label.get_width() +
+                                         250, self.__label.get_height()))
         SCREEN.blit(self.__label, self.__emplacementTexte)
 
 
@@ -232,7 +232,7 @@ class Affichage:
         else:
             self.__texteJeu = "Au tour du joueur rouge"
         self.afficherTexte()
-        py.display.flip()
+        pygame.display.flip()
 
     def texteFinDeJeu(self, couleurGagnant: tuple):
         if couleurGagnant == JAUNE:
@@ -242,11 +242,11 @@ class Affichage:
         else:
             self.__texteJeu = "Ex aequo!"
         self.afficherTexte()
-        py.display.flip()
+        pygame.display.flip()
 
 
     def afficherPlateau(self):
-        py.draw.rect(SCREEN, BLEU, (50, 165, 98 * 7, 98 * 6))
+        pygame.draw.rect(SCREEN, BLEU, (50, 165, 98 * 7, 98 * 6))
 
 
     def afficherPions(self):
@@ -260,10 +260,10 @@ class Affichage:
             l = []
             for j in range(colonnes):
                 # dessiner un cercle transparant avec un contour noir
-                py.draw.circle(SCREEN, NOIR, (posX, posY), self.__tailleCercle, 3)
+                pygame.draw.circle(SCREEN, NOIR, (posX, posY), self.__tailleCercle, 3)
                 # dessiner un cercle blanc
-                l.append(py.draw.circle(SCREEN, self.__plateau.getPion(i, j).getCouleur().getRGB(), (posX, posY),
-                                        self.__tailleCercle - 3, 0))
+                l.append(pygame.draw.circle(SCREEN, self.__plateau.getPion(i, j).getCouleur().getRGB(), (posX, posY),
+                                            self.__tailleCercle - 3, 0))
                 if j == colonnes - 1:
                     posX = 120
                     self.__matPions.append(l)
@@ -277,8 +277,8 @@ class Affichage:
 
     def setPion(self, posI: int, posJ: int, rgb: tuple):
         posXY = self.convertirPosMatriceEnPosEcran(posI, posJ)
-        self.__matPions[posI][posJ] = py.draw.circle(SCREEN, rgb, (posXY[1], posXY[0]), self.__tailleCercle - 3, 0)
-        py.display.flip()
+        self.__matPions[posI][posJ] = pygame.draw.circle(SCREEN, rgb, (posXY[1], posXY[0]), self.__tailleCercle - 3, 0)
+        pygame.display.flip()
 
     def convertirPosMatriceEnPosEcran(self, posI: int, posJ: int) -> tuple:
         return 240 + posI * self.__ecartement, 120 + posJ * self.__ecartement
@@ -290,7 +290,7 @@ class Affichage:
         self.afficherPlateau()
         self.afficherPions()
         self.afficherTexte()
-        py.display.flip()
+        pygame.display.flip()
 
 
 
@@ -313,22 +313,22 @@ class Jeu:
         self.__affichage.initialiserAffichagePlateau()
 
         while running:
-            for event in py.event.get():
-                if event.type == py.QUIT:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
                     running = False
 
                 # permet d'économiser les ressources en mettant à jour le plateau uniquement s'il y a une action
                 # utilisateur (click de souris ou frappe de clavier)
-                if event.type == py.MOUSEBUTTONDOWN or event.type == py.KEYUP:
-                    if event.type == py.MOUSEBUTTONDOWN:
+                if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.KEYUP:
+                    if event.type == pygame.MOUSEBUTTONDOWN:
                         if self.actionSouris():
                             mettreAJourEcran = True
-                    elif event.type == py.KEYUP:
+                    elif event.type == pygame.KEYUP:
                         if self.actionClavier(event):
                             mettreAJourEcran = True
 
             if mettreAJourEcran:
-                py.display.update()
+                pygame.display.update()
                 mettreAJourEcran = False
                 if self.__aUnGagnant:
                     running = False
@@ -343,12 +343,12 @@ class Jeu:
                     self.__isAuTourDuJaune = not self.__isAuTourDuJaune
                     self.__affichage.actualiserTexte(self.__isAuTourDuJaune)
         time.sleep(10) # 15 secondes pour que le jeu se ferme
-        py.quit()
+        pygame.quit()
 
 
 
     def actionSouris(self) -> bool:
-        mouseX, mouseY = py.mouse.get_pos()
+        mouseX, mouseY = pygame.mouse.get_pos()
         for listeCercles in self.__affichage.getMatricePions():
             for cercle in listeCercles:
                 if cercle.collidepoint(mouseX, mouseY):
@@ -356,7 +356,7 @@ class Jeu:
                     return self.placerPion(j)
 
 
-    def actionClavier(self, event: py.event.Event) -> bool:
+    def actionClavier(self, event: pygame.event.Event) -> bool:
         if event.dict.get('key') == 49:
             # correspond à la touche & ou 1
             return self.placerPion(0)
